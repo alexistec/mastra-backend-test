@@ -6,10 +6,7 @@ import { weatherWorkflow } from './workflows/weather-workflow';
 import { weatherAgent } from './agents/weather-agent';
 import { mathAgent } from './agents/math-agent';
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
-
-import { VercelDeployer } from '@mastra/deployer-vercel'
-
-export const 
+import { VercelDeployer } from '@mastra/deployer-vercel';
 
 import { PostgresStore } from '@mastra/pg'
 
@@ -20,7 +17,7 @@ const storage = new PostgresStore({
 
 
 export const mastra = new Mastra({
-  deployer: new VercelDeployer()
+  deployer: new VercelDeployer(),
   workflows: { weatherWorkflow },
   agents: { weatherAgent, mathAgent },
   scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
