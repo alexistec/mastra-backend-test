@@ -7,14 +7,34 @@ import { weatherAgent } from './agents/weather-agent';
 import { mathAgent } from './agents/math-agent';
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
 import { VercelDeployer } from '@mastra/deployer-vercel';
-import { SimpleAuth } from '@mastra/core/server'
+import { MastraAuthConfig } from '@mastra/core/server'
+import { PostgresStore } from '@mastra/pg'
 
 type User = {
   id: string
   name: string
+  role: 'admin' | 'user'
 }
 
-import { PostgresStore } from '@mastra/pg'
+const authConfig: MastraAuthConfig<User> = {
+  async authenticateToken(token, request) {
+    if (token === process.env.SIMPLE_AUTH_TOKEN) {
+      return {
+        id: 'user-admin',
+        name: 'Admin User',
+        role: 'admin',
+      }
+    }
+
+    throw new Error('Invalid token')
+  },
+
+  async authorize(path, method, user, context) {
+    return true
+  },
+}
+
+
 
 const storage = new PostgresStore({
   id: 'pg-storage',
@@ -47,13 +67,6 @@ export const mastra = new Mastra({
     },
   }),
   server: {
-    auth: new SimpleAuth<User>({
-      tokens: {
-        [process.env.SIMPLE_AUTH_TOKEN as string]: {
-          id: 'user-alexis',
-          name: 'Admin User',
-        },
-      },
-    }),
+    auth: authConfig,
   },
 });
