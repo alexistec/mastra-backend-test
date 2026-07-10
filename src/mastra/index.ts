@@ -7,6 +7,12 @@ import { weatherAgent } from './agents/weather-agent';
 import { mathAgent } from './agents/math-agent';
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
 import { VercelDeployer } from '@mastra/deployer-vercel';
+import { SimpleAuth } from '@mastra/core/server'
+
+type User = {
+  id: string
+  name: string
+}
 
 import { PostgresStore } from '@mastra/pg'
 
@@ -40,4 +46,14 @@ export const mastra = new Mastra({
       },
     },
   }),
+  server: {
+    auth: new SimpleAuth<User>({
+      tokens: {
+        [process.env.SIMPLE_AUTH_TOKEN as string]: {
+          id: 'user-alexis',
+          name: 'Admin User',
+        },
+      },
+    }),
+  },
 });
